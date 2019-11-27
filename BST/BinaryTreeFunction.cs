@@ -79,7 +79,7 @@ namespace BST
                 treeNumbers = GetNumbers(File.ReadAllLines(fileName)[0]);
                 if (treeNumbers != null)
                 {
-                    Console.WriteLine("Calling from file");
+                    //Console.WriteLine("Calling from file");
                     BuildTree();
                     break;
                 }
@@ -95,7 +95,7 @@ namespace BST
                 treeNumbers = GetNumbers(Console.ReadLine());
                 if (treeNumbers != null)
                 {
-                    Console.WriteLine("Calling from manual");
+                    //Console.WriteLine("Calling from manual");
                     BuildTree();
                     break;
                 }
@@ -110,23 +110,49 @@ namespace BST
 
         void FindingElement(BinarySearchTree tree)
         {
+            tree.ResetSteps();
             Console.Write("\nEnter the value of the element you want to find: ");
             var val = Console.ReadLine();
             int r;
+            bool e;
             if(int.TryParse(val, out r))
             {
-                tree.FindElement(r);
+                tree.FindElement(r, out e);
             }
+            Console.WriteLine("Steps taken: " + tree.GetSteps());
         }
         void AddingElement(BinarySearchTree tree)
         {
+            tree.ResetSteps();
             Console.Write("\nEnter the value of the element you want to add: ");
             var val = Console.ReadLine();
             int r;
             if (int.TryParse(val, out r))
             {
-                tree.AddElement(r);
+                tree.AddElement(r, print:true);
             }
+            Console.WriteLine("Steps taken: " + tree.GetSteps());
+        }
+
+        void RemovingElement(BinarySearchTree tree)
+        {
+            tree.ResetSteps();
+            Console.Write("\nEnter the value of the element you want to remove: ");
+            var val = Console.ReadLine();
+            int r;
+            bool e;
+            if (int.TryParse(val, out r))
+            {
+                tree.RemoveElement(tree.FindElement(r, out e, print:false));
+            }
+            Console.WriteLine("Steps taken: " + tree.GetSteps());
+        }
+
+        void GettingHeight(BinarySearchTree tree)
+        {
+            tree.ResetSteps();
+            Console.WriteLine("Height is " + tree.GetHeight());
+            Console.WriteLine("Steps taken: " + tree.GetSteps());
         }
 
         void PrintFunctions()
@@ -138,19 +164,15 @@ namespace BST
             Console.WriteLine("3. Remove Element");
             Console.WriteLine("4. Get Height");
             Console.WriteLine("5. Print Tree");
-            Console.WriteLine("6. Back to Main Menu");
+            Console.WriteLine("6. Write to File");
+            Console.WriteLine("7. Back to Main Menu");
         }
 
         void BuildTree()
         {
             var n = treeNumbers;
             Console.Write("\n");
-            foreach(var k in n)
-            {
-                Console.Write(k + " ");
-                
-            }
-            Console.ReadKey();
+            //Console.ReadKey();
             var t = new BinarySearchTree(treeNumbers);
             PrintFunctions();
             while (true)
@@ -166,21 +188,24 @@ namespace BST
                 if (res == '1')
                 {
                     FindingElement(t);
+                    
                     continue;
                 }
                 else if (res == '2')
                 {
                     AddingElement(t);
+                    t.PrintTree();
                     continue;
                 }
                 else if (res == '3')
                 {
-                    //AddingElement(t);
+                    RemovingElement(t);
+                    t.PrintTree();
                     continue;
                 }
                 else if (res == '4')
                 {
-                    //AddingElement(t);
+                    GettingHeight(t);
                     continue;
                 }
                 else if (res == '5')
@@ -189,6 +214,13 @@ namespace BST
                     continue;
                 }
                 else if (res == '6')
+                {
+                    File.WriteAllText(Directory.GetCurrentDirectory() + "\\output.txt", t.PrintTree(print:false), Encoding.UTF8);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Tree written to output.txt!");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+                else if (res == '7')
                 {
                     Program.DoWelcomeScreen();
                     break;
